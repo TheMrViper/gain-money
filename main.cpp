@@ -30,7 +30,7 @@ void GainMoneyWithDrop(void * _this, size_t inc, bool write_log)
 TrampolineHook<void(void*, XID*)> *OnDuelStartPatcher;
 void OnDuelStart(void *_this, XID *target)
 {
-    printf("[PLUGIN] OnDuelStart: received values %d  %d\n", target.id, target.type)
+    printf("[PLUGIN] OnDuelStart: received values %d  %d\n", target->id, target->type)
 
     OnDuelStartPatcher->CallOriginal(_this, target);
 }
