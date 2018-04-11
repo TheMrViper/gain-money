@@ -13,4 +13,4 @@ struct XID {
     bool IsPlayer(void) const;
     bool IsValid(void) const;
     bool IsErrorType(void) const;
-}
+};

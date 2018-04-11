@@ -30,15 +30,24 @@ void GainMoneyWithDrop(void * _this, size_t inc, bool write_log)
 TrampolineHook<void(void*, XID*)> *OnDuelStartPatcher;
 void OnDuelStart(void *_this, XID *target)
 {
-    printf("[PLUGIN] OnDuelStart: received values %d  %d\n", target->id, target->type)
+    printf("[PLUGIN] OnDuelStart: received values %d  %d\n", target->id, target->type);
 
     OnDuelStartPatcher->CallOriginal(_this, target);
+}
+
+TrampolineHook<void(void*,XID*,bool,char)> *DiePatcher;
+void Die(void *_this, XID *attacker, bool is_pariah, char attack_mode)
+{
+    printf("[PLUGIN] Die: received values attacker.id = %d, attacker.type = %d, is_pariah = %b, attack_mode = %c", attacker->id, attacker->type, is_pariah, attack_mode);
+
+    DiePatcher->CallOriginal(_this, attacker, is_pariah, attack_mode);
 }
 
 
 void module_load(void)
 {
 	printf("[PLUGIN] GainMoney: loaded\n");
+	DiePatcher = new TrampolineHook<void(void*, XID*, bool, char)>(0x0807D78E, Die);
     OnDuelStartPatcher = new TrampolineHook<void(void*, XID*)>(0x0811D08A, OnDuelStart);
 	GainMoneyWithDropPatcher = new TrampolineHook<void(void*, size_t, bool)>(0x0807CEC8, GainMoneyWithDrop);
     printf("[PLUGIN] GainMoney: patched\n");
