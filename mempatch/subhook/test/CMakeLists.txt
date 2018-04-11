@@ -1,7 +1,7 @@
 add_executable(test_exe
   test.c
 )
-
+add_definitions(-m32)
 set_target_properties(test_exe PROPERTIES OUTPUT_NAME test)
 target_link_libraries(test_exe subhook)
 

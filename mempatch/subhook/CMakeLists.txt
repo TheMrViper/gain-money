@@ -14,7 +14,7 @@ set(SUBHOOK_VERSION ${SUBHOOK_VERSION}.${SUBHOOK_VERSION_PATCH})
 set(SUBHOOK_HEADERS subhook.h)
 set(SUBHOOK_SOURCES subhook.c subhook_private.h)
 
-add_definitions(-DSUBHOOK_IMPLEMENTATION)
+add_definitions(-DSUBHOOK_IMPLEMENTATION -m32)
 
 if(SUBHOOK_STATIC)
   add_library(subhook STATIC ${SUBHOOK_HEADERS} ${SUBHOOK_SOURCES})

@@ -5,7 +5,7 @@
 #include <unistd.h>
 //#include "BeaEngine.h"
 
-#include "memory_patch/memory_patch.h"
+#include "mempatch/memory_patch.h"
 
 //#include "Memory.h"
 
@@ -18,27 +18,48 @@ void MyGainMoney(void * _this, size_t inc)
 {
 	printf("Money: %d\n",inc);
 }
+
+
+TrampolineHook<void(void*, size_t, bool)> *patcher;
+
+
+//CallHook<void(void*, size_t, bool)> patcher(0x08074E2B, MyGainMoneyWithDrop);
+
 void MyGainMoneyWithDrop(void * _this, size_t inc, bool write_log)
 {
+	
 	printf("MoneyWithDrop: %d\n",inc);
+
+	inc += 322;
+
+
+	patcher->CallOriginal(_this, inc, write_log);
 }
 
+
 void module_load(void)
-{
+{	
 	unsetenv("LD_PRELOAD");
 	printf("UnsetEnv: LD_PRELOAD\n");	
-// pointer 0x34FF2
 
 	printf("pid: %d\n", getpid());
 
-	//DISASM disasm;
+	
+	patcher = new TrampolineHook<void(void*, size_t, bool)>(0x0807CEC8, MyGainMoneyWithDrop);
+
 
 	//ptrace(PTRACE_PICKDATA, 0, 0x34FF2, 0);
 
-    printf("hello from .so!\n");
+    	printf("hello from .so!\n");
 
 	//memory_patch::CallHook<void(void*, size_t)> patcher1(0x0807CFF2, MyGainMoney);
-	CallHook<void(void*, size_t, bool)> patcher(0x0807CEC8, MyGainMoneyWithDrop);
+	//patcher = new TrampolineHook<void(void*, size_t, bool)>(0x08074E2B, MyGainMoneyWithDrop);
+
+	printf("changed function call\n");
+
+	printf("0x%p \n", &MyGainMoneyWithDrop);
+	printf("0x%p \n", reinterpret_cast<const void*>(MyGainMoneyWithDrop));
+	printf("0x%p \n", reinterpret_cast<const void*>(&MyGainMoneyWithDrop));
 }
 
 void module_unload(void)
