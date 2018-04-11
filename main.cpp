@@ -1,15 +1,12 @@
 #include <cstdio>
 #include <stdlib.h>
-#include <sys/ptrace.h>
 
-#include <unistd.h>
-//#include "BeaEngine.h"
-
+#include "XID.h"
 #include "mempatch/memory_patch.h"
 
-//#include "Memory.h"
 
 using namespace memory_patch;
+
 void __attribute__ ((constructor)) module_load(void);
 void __attribute__ ((destructor)) module_unload(void);
 
@@ -20,51 +17,36 @@ void MyGainMoney(void * _this, size_t inc)
 }
 
 
-TrampolineHook<void(void*, size_t, bool)> *patcher;
-
-
-//CallHook<void(void*, size_t, bool)> patcher(0x08074E2B, MyGainMoneyWithDrop);
-
-void MyGainMoneyWithDrop(void * _this, size_t inc, bool write_log)
+TrampolineHook<void(void*, size_t, bool)> *GainMoneyWithDropPatcher;
+void GainMoneyWithDrop(void * _this, size_t inc, bool write_log)
 {
-	
-	printf("MoneyWithDrop: %d\n",inc);
+	printf("[PLUGIN] GainMoney: received value %d\n",inc);
+    inc += 322;
+    printf("[PLUGIN] GainMoney: changed value to %d\n", inc);
 
-	inc += 322;
+	GainMoneyWithDropPatcher->CallOriginal(_this, inc, write_log);
+}
 
+TrampolineHook<void(void*, XID*)> *OnDuelStartPatcher;
+void OnDuelStart(void *_this, XID *target)
+{
+    printf("[PLUGIN] OnDuelStart: received values %d  %d\n", target.id, target.type)
 
-	patcher->CallOriginal(_this, inc, write_log);
+    OnDuelStartPatcher->CallOriginal(_this, target);
 }
 
 
 void module_load(void)
-{	
-	unsetenv("LD_PRELOAD");
-	printf("UnsetEnv: LD_PRELOAD\n");	
-
-	printf("pid: %d\n", getpid());
-
-	
-	patcher = new TrampolineHook<void(void*, size_t, bool)>(0x0807CEC8, MyGainMoneyWithDrop);
-
-
-	//ptrace(PTRACE_PICKDATA, 0, 0x34FF2, 0);
-
-    	printf("hello from .so!\n");
-
-	//memory_patch::CallHook<void(void*, size_t)> patcher1(0x0807CFF2, MyGainMoney);
-	//patcher = new TrampolineHook<void(void*, size_t, bool)>(0x08074E2B, MyGainMoneyWithDrop);
-
-	printf("changed function call\n");
-
-	printf("0x%p \n", &MyGainMoneyWithDrop);
-	printf("0x%p \n", reinterpret_cast<const void*>(MyGainMoneyWithDrop));
-	printf("0x%p \n", reinterpret_cast<const void*>(&MyGainMoneyWithDrop));
+{
+	printf("[PLUGIN] GainMoney: loaded\n");
+    OnDuelStartPatcher = new TrampolineHook<void(void*, XID*)>(0x0811D08A, OnDuelStart);
+	GainMoneyWithDropPatcher = new TrampolineHook<void(void*, size_t, bool)>(0x0807CEC8, GainMoneyWithDrop);
+    printf("[PLUGIN] GainMoney: patched\n");
 }
 
 void module_unload(void)
 {
+    delete OnDuelStartPatcher;
+    delete GainMoneyWithDropPatcher;
 }
 
-
-//build: g++ -fPIC *.cpp -m32 -Llibs/libBeaEngine.a -ldl -shared -o gain_money.so
