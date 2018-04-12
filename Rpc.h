@@ -5,7 +5,7 @@
 
 struct Data : public Marshal {
   public:
-    ~Data(int);
+    ~Data();
     virtual Data * Clone(void) const;
     virtual void Destroy(void);
     virtual Data & operator=(const Data &);

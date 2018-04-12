@@ -3,6 +3,8 @@
 
 #include "Octets.h"
 
+enum Transaction {Begin, Commit, Rollback}
+
 struct Marshal {
   public:
     virtual OctetsStream & marshal(OctetsStream &) const;
@@ -77,5 +79,4 @@ struct OctetsStream {
     const OctetsStream & operator>>(const Octets &) const;
     void pop_byte(char *, unsigned int) const;
 };
-enum Transaction {Begin, Commit, Rollback}
 #endif // MARSHAL_HEADER
