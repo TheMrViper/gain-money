@@ -4,7 +4,7 @@ struct Octets {
   private:
     void *base;
 
-    Octets::Rep * rep(void) const;
+    Rep * rep(void) const;
     void unique(void);
   public:
     Octets & reserve(unsigned int);
@@ -33,11 +33,11 @@ struct Octets {
     void dump(void);
 };
 
-struct Octets::Rep {
+struct Rep {
     size_t cap;
     size_t len;
     size_t ref;
-    static Octets::Rep null;
+    static Rep null;
   public:
     void addref(void);
     void release(void);
@@ -46,7 +46,7 @@ struct Octets::Rep {
     void * unique(void);
     void * reserve(unsigned int);
     static size_t frob_size(unsigned int);
-    static Octets::Rep * create(unsigned int);
+    static Rep * create(unsigned int);
     static void * operator new(unsigned int, unsigned int);
     static void operator delete(void *);
 };

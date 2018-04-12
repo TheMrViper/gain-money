@@ -5,7 +5,7 @@
 #include "Octets.h"
 #include "Marshal.h"
 
-struct GRoleBase : public Rpc::Data {
+struct GRoleBase : public Data {
     char version;
     unsigned int id;
     Octets name;
@@ -28,11 +28,11 @@ struct GRoleBase : public Rpc::Data {
     GRoleBase(char, unsigned int, const Octets &, int, int, unsigned char, Octets, Octets, unsigned int,
         unsigned char, int, int, int, unsigned int, int, int);
     GRoleBase(const GRoleBase &);
-    virtual Rpc::Data * Clone(void) const;
-    virtual Rpc::Data & operator=(const Rpc::Data &);
+    virtual Data * Clone(void) const;
+    virtual Data & operator=(const Data &);
     GRoleBase & operator=(const GRoleBase &);
-    virtual Marshal::OctetsStream & marshal(Marshal::OctetsStream &) const;
-    virtual const Marshal::OctetsStream & unmarshal(const Marshal::OctetsStream &);
+    virtual OctetsStream & marshal(OctetsStream &) const;
+    virtual const OctetsStream & unmarshal(const OctetsStream &);
 };
 
 #endif // GROLEBASE_HEADER

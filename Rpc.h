@@ -3,12 +3,12 @@
 
 #include "Marshal.h"
 
-struct Rpc::Data : public Marshal {
+struct Data : public Marshal {
   public:
     ~Data(int);
-    virtual Rpc::Data * Clone(void) const;
+    virtual Data * Clone(void) const;
     virtual void Destroy(void);
-    virtual Rpc::Data & operator=(const Rpc::Data &);
+    virtual Data & operator=(const Data &);
 };
 
 #endif // RPC_HEADER
