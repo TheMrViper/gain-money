@@ -1,3 +1,5 @@
+#ifndef XID_HEADER
+#define XID_HEADER
 
 struct XID {
     int type;
@@ -14,3 +16,5 @@ struct XID {
     bool IsValid(void) const;
     bool IsErrorType(void) const;
 };
+
+#endif // XID_HEADER

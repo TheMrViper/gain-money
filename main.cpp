@@ -2,6 +2,8 @@
 #include <stdlib.h>
 
 #include "XID.h"
+#include "GRoleBase.h"
+#include "Marshal.h"
 #include "mempatch/memory_patch.h"
 
 
@@ -51,6 +53,13 @@ void duel_result(void *_this, XID* target, bool is_failed)
     duel_resultParcher->CallOriginal(_this, target, is_failed);
 }
 
+TrampolineHook<Marshal::OctetsStream*(GRoleBase*, Marshal::OctetsStream*)> *GRoleBase_MarshalPatcher;
+Marshal::OctetsStream * GRoleBase_Marshal(GRoleBase *_this, Marshal::OctetsStream *os)
+{
+    printf("[PLUGIN] GRoleBase_Marshal: received value id = %d, reserved2 = %d\n", _this->id, _this->reserved2);
+
+    return GRoleBase_MarshalPatcher->CallOriginal(_this, os);
+}
 void module_load(void)
 {
 	printf("[PLUGIN] GainMoney: loaded\n");
@@ -58,6 +67,7 @@ void module_load(void)
 	duel_resultParcher = new TrampolineHook<void(void*, XID*, bool)>(0x080708A0, duel_result);
     OnDuelStartPatcher = new TrampolineHook<void(void*, XID*)>(0x0811D08A, OnDuelStart);
 	GainMoneyWithDropPatcher = new TrampolineHook<void(void*, size_t, bool)>(0x0807CEC8, GainMoneyWithDrop);
+    GRoleBase_MarshalPatcher = new TrampolineHook<Marshal::OctetsStream(GRoleBase*, Marshal::OctetsStream)>(0x082E5CC0, GRoleBase_Marshal);
     printf("[PLUGIN] GainMoney: patched\n");
 }
 
